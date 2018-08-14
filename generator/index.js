@@ -114,6 +114,25 @@ module.exports = (api, opts, rootOpts) => {
       })
     }
 
+    helpers.updateFile(api.resolve('./.browserslistrc'), lines => {
+      if (!lines.length) {
+        return [
+          '> 1%',
+          'last 2 versions',
+          'not ie <= 10',
+        ]
+      }
+
+      const ieLineIndex = lines.findIndex(line => line.match(/^([^\s]*\s+|)ie\s*</))
+      if (ieLineIndex === -1) {
+        lines.push('not ie <= 10')
+      } else {
+        lines[ieLineIndex] = 'not ie <= 10'
+      }
+
+      return lines
+    })
+
     // If a-la-carte, update babel
     if (opts.useAlaCarte) {
       helpers.updateBabelConfig(cfg => {
